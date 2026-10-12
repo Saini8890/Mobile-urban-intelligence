@@ -1,264 +1,238 @@
-<<<<<<< HEAD
-![SIH 2026](https://img.shields.io/badge/SIH%202026-Rank%2013%2F150%20(Top%209%25)-blue)
-![Python](https://img.shields.io/badge/Python-3.11+-green)
-![YOLOv8](https://img.shields.io/badge/YOLOv8-mAP%400.5%3D0.75-orange)
-![FastAPI](https://img.shields.io/badge/FastAPI-Backend-teal)
-![React](https://img.shields.io/badge/React-Dashboard-blue)
-![License](https://img.shields.io/badge/License-MIT-yellow)
-
 # 🚌 AI-Powered Mobile Urban Intelligence Platform
 
-> Transforming public transport buses into mobile urban sensing units using edge AI + centralized analytics.
+![SIH 2026](https://img.shields.io/badge/SIH%202026-Internal%20Hackathon-blue)
+![Python](https://img.shields.io/badge/Python-3.11+-green)
+![YOLOv8](https://img.shields.io/badge/YOLOv8-Computer%20Vision-orange)
+![FastAPI](https://img.shields.io/badge/FastAPI-Backend-teal)
+![React](https://img.shields.io/badge/React-Dashboard-blue)
 
-**Problem Statement ID:** 26124  
-**Domain:** Smart Cities / Urban Mobility / Computer Vision  
-**SIH 2026 Internal Hackathon — Ranked 13th out of 150 teams (Top 9%)**
+**Transforming public transport buses into mobile urban sensing units using Edge AI and centralized analytics.**
+
+- **Problem Statement ID:** 26124
+- **Domain:** Smart Cities / Urban Mobility / Computer Vision
+- **Project:** Mobile Urban Intelligence Platform
+- **Maintainer:** Ashish Saini
 
 ---
 
 ## 📖 Overview
 
-Urban public transport buses traverse every major road daily and increasingly carry multiple cameras. This project turns them into **intelligent sensing platforms** that detect:
+Public transport buses travel across cities every day and can help monitor road conditions, traffic, and public safety. This project uses camera feeds and AI-based computer vision to identify potential road hazards and traffic events.
 
-- 🕳️ **Road defects** — potholes, cracks, damaged surfaces
-- 🚧 **Missing infrastructure** — dividers, zebra crossings, traffic signs
-- 🚶 **Vulnerable pedestrians** — school zones, crossing risks
-- 🚗 **Traffic incidents** — hit-and-run, rash driving (with ANPR)
-- 🚦 **Congestion** — vehicle density, traffic bottlenecks
+The platform processes video through an edge AI pipeline and sends event metadata to a centralized command center for monitoring and analysis.
 
-Data is processed **on the edge** (onboard the bus) and only lightweight metadata is sent to a **central command center** — achieving **99% bandwidth reduction** over raw video transmission.
+### Problems Addressed
 
----
+- Road defects, including potholes and damaged surfaces
+- Missing or damaged road infrastructure
+- Pedestrian and road-safety risks
+- Traffic incidents and vehicle identification
+- Traffic congestion and vehicle density estimation
 
 ## ✨ Key Features
 
-### Onboard Edge AI
-- **Multi-model inference:** YOLOv8 (general) + custom-trained pothole detector
-- **Custom pothole model:** mAP@0.5 = **0.75**, Precision = **0.82**, Recall = **0.67**
-- **Trained via transfer learning** on annotated Indian road dataset
-- **Multi-class detection:** potholes, pedestrians, vehicles, missing infrastructure
-- **ByteTrack** for deduplication across frames
-- **Offline-first:** events buffer in SQLite when connectivity drops
-- **Low bandwidth:** ~2 KB JSON/event vs ~50 MB video clip
+### 🚌 Onboard Edge AI
 
-### Central Command Center
-- **REST API** (FastAPI) with OpenAPI/Swagger docs
-- **WebSocket** live event streaming
-- **8-page dashboard** (React + Vite + Leaflet):
-  - Command Center (KPIs + live feed)
-  - Live GIS Map (event markers, clusters)
-  - Traffic Analytics (speed trends)
-  - Road Conditions (hazard distribution)
-  - Incidents (ANPR, dispatch actions)
-  - Fleet Monitoring (real-time bus tracker)
-  - Evidence Vault (frame snapshots)
-  - Admin (simulator controls, diagnostics)
-- **ANPR module** for hit-and-run incidents
-- **Simulator** for scale testing & demo
+- YOLOv8-based object detection
+- Road hazard and pothole detection
+- Vehicle and pedestrian detection
+- ByteTrack-based object tracking
+- GPS- and timestamp-based event generation
+- Offline event buffering using SQLite
+- Metadata-based event reporting to reduce network usage
 
----
+### 🖥️ Central Command Center
 
-## 🏗️ Architecture
+- FastAPI backend with REST APIs
+- WebSocket-based live event updates
+- React-based monitoring dashboard
+- GIS maps using Leaflet
+- Traffic and road-condition analytics
+- Incident monitoring and ANPR integration
+- Fleet monitoring and evidence management
+- Simulator for demonstration and testing
+
+## 🏗️ System Architecture
 
 ```text
-┌─────────────────────────────────────────────────────────────┐
-│                    EDGE AI (Onboard Bus)                     │
-│                                                              │
-│   Video Feed ──▶ YOLOv8 Model ──▶ Event Generator           │
-│   (4 cameras)    (multi-task)     + GPS + Timestamp         │
-│                                         │                    │
-│                          ┌──────────────┘                    │
-│                          ▼                                   │
-│              ┌───────────────────────┐                       │
-│              │ Offline Buffer (SQLite)│ (network fallback)   │
-│              └───────────┬───────────┘                       │
-└──────────────────────────┼───────────────────────────────────┘
-                           │ ~2 KB JSON per event
-                           ▼
-┌─────────────────────────────────────────────────────────────┐
-│              CENTRAL COMMAND CENTER (Cloud)                  │
-│                                                              │
-│   FastAPI ──▶ SQLite DB ──▶ React Dashboard                 │
-│   Ingestion   (PostGIS-     + Leaflet GIS                   │
-│   + WebSocket  ready)       + Analytics                     │
-└─────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────┐
+│          EDGE AI — ONBOARD BUS       │
+│                                      │
+│  Camera Feeds                        │
+│       ↓                              │
+│  YOLOv8 Object Detection              │
+│       ↓                              │
+│  Object Tracking + Event Generation   │
+│       ↓                              │
+│  GPS + Timestamp + Event Metadata     │
+│       ↓                              │
+│  SQLite Offline Buffer                │
+└──────────────────┬───────────────────┘
+                   │
+                   │ Event Metadata
+                   ▼
+┌──────────────────────────────────────┐
+│        CENTRAL COMMAND CENTER         │
+│                                      │
+│  FastAPI REST API + WebSockets        │
+│       ↓                              │
+│  Database + Event Processing          │
+│       ↓                              │
+│  React Dashboard                      │
+│       ↓                              │
+│  GIS Maps + Analytics + Alerts        │
+└──────────────────────────────────────┘
 ```
 
----
+## 🛠️ Technology Stack
 
-## 🛠️ Tech Stack
-
-| Layer | Technology |
+| Layer | Technologies |
 |---|---|
-| **Edge AI** | Python, YOLOv8 (Ultralytics), OpenCV, ByteTrack, SQLite |
-| **Backend** | FastAPI, SQLAlchemy, Pydantic, Uvicorn, WebSocket |
-| **Frontend** | React, Vite, Leaflet, Recharts |
-| **Database** | SQLite (PostGIS-ready for production) |
-| **Deployment** | Docker, docker-compose |
-
----
+| Edge AI | Python, YOLOv8, OpenCV, ByteTrack |
+| Backend | FastAPI, SQLAlchemy, Pydantic, Uvicorn |
+| Frontend | React, TypeScript, Vite |
+| Maps and Analytics | Leaflet, Recharts |
+| Database | SQLite |
+| Communication | REST APIs, WebSockets |
+| Deployment | Docker, Docker Compose |
 
 ## 📂 Project Structure
 
 ```text
-mobile_urban_intelligence/
-├── edge/                       # Onboard AI pipeline
-│   ├── detector.py             # YOLOv8 multi-model inference
-│   ├── tracker.py              # ByteTrack deduplication
-│   ├── gps_simulator.py        # GPS route waypoints
-│   ├── event_engine.py         # Event schema + severity
-│   ├── uploader.py             # HTTP + offline buffer
-│   ├── pipeline.py             # Frame orchestration
-│   ├── run.py                  # CLI entry point
-│   ├── config.py               # Thresholds + paths
-│   ├── models/                 # Trained .pt weights
-│   └── data/                   # Video inputs (gitignored)
-│
-├── backend/                    # Central command API
+mobile-urban-intelligence/
+├── backend/
 │   ├── app/
-│   │   ├── main.py             # FastAPI app
-│   │   ├── api/                # Route handlers
-│   │   ├── db/                 # SQLAlchemy models
-│   │   ├── services/           # Business logic
-│   │   ├── ai/                 # Server-side AI hooks
-│   │   └── sim/                # Fleet simulator
-│   └── evidence/               # Uploaded snapshots
-│
-├── frontend/                   # React dashboard
+│   │   ├── main.py
+│   │   ├── api/
+│   │   ├── db/
+│   │   ├── services/
+│   │   ├── ai/
+│   │   └── sim/
+│   └── evidence/
+├── edge/
+│   ├── detector.py
+│   ├── tracker.py
+│   ├── gps_simulator.py
+│   ├── event_engine.py
+│   ├── uploader.py
+│   ├── pipeline.py
+│   ├── run.py
+│   ├── config.py
+│   ├── models/
+│   └── data/
+├── frontend/
 │   ├── src/
-│   │   ├── pages/              # 8 dashboard pages
-│   │   ├── components/         # Reusable UI
-│   │   └── services/           # Backend client
+│   │   ├── pages/
+│   │   ├── components/
+│   │   └── services/
 │   └── package.json
-│
 ├── docker-compose.yml
 └── README.md
 ```
 
----
-
-## 🚀 Quick Start
+## 🚀 Getting Started
 
 ### Prerequisites
-- Python 3.11+ (3.12 recommended)
-- Node.js 18+
-- (Optional) CUDA-compatible GPU for faster inference
 
-### 1. Clone & Setup
+- Python 3.11 or later
+- Node.js 18 or later
+- Git
+- Optional CUDA-compatible GPU for accelerated inference
+
+### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/RakeshChoudhary49/mobile-urban-intelligence.git
-cd mobile-urban-intelligence
-
-# Backend
-cd backend
-python -m venv .venv
-.venv\Scripts\activate          # Windows
-pip install -r requirements.txt
-
-# Edge
-cd ../edge
-pip install -r requirements.txt
-
-# Frontend
-cd ../frontend
-npm install
+git clone https://github.com/Saini8890/Mobile-urban-intelligence.git
+cd Mobile-urban-intelligence
 ```
 
-### 2. Start the Central Server
+### 2. Set Up the Backend
+
+Open a terminal in the project directory:
 
 ```bash
 cd backend
+python -m venv .venv
+```
+
+**Windows PowerShell:**
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+Install the backend dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Start the backend server:
+
+```bash
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-API docs: **http://127.0.0.1:8000/docs**
+API documentation: http://127.0.0.1:8000/docs
 
-### 3. Start the Dashboard
+### 3. Set Up the Frontend
+
+Open a separate terminal in the project root:
 
 ```bash
 cd frontend
+npm install
 npm run dev
 ```
 
-Dashboard: **http://localhost:5173**
+Open the local URL displayed by Vite, usually:
 
-### 4. Run Edge AI on a Single Bus
+http://localhost:5173
+
+### 4. Run the Edge AI Pipeline
+
+Open another terminal in the project root:
 
 ```bash
 cd edge
-python run.py --video "data/bus_01.mp4" --bus-code BUS-101 --api-url http://127.0.0.1:8000
+pip install -r requirements.txt
+python run.py --help
 ```
 
-### 5. Run the Fleet (4 buses in parallel)
+Use the available command-line options to configure the video source, bus identifier, and backend API URL.
 
-```bash
-# Terminal 1
-python run.py --video "data/bus_01.mp4" --bus-code BUS-101
+**Note:** Commands and dependencies may need adjustment depending on the actual project implementation and installed packages.
 
-# Terminal 2
-python run.py --video "data/bus_02.mp4" --bus-code BUS-102
+## 🔐 Privacy and Data Handling
 
-# Terminal 3
-python run.py --video "data/bus_03.mp4" --bus-code BUS-103
+The intended architecture processes video on the edge and sends event metadata to the central server. Evidence images or other data may be transmitted where configured.
 
-# Terminal 4
-python run.py --video "data/bus_04.mp4" --bus-code BUS-104
-```
+Production deployments should implement authentication, access controls, secure communication, data-retention policies, and appropriate privacy safeguards.
 
-Watch all 4 buses stream events to one dashboard in real time.
+## 🔮 Future Improvements
 
----
+- Improve detection accuracy using additional annotated road datasets
+- Deploy and evaluate the edge pipeline on embedded AI hardware
+- Improve vehicle counting and congestion analytics
+- Integrate a production-ready OCR model for ANPR
+- Migrate to a spatial database such as PostgreSQL with PostGIS
+- Add role-based access control and audit logging
+- Evaluate performance under real-world network conditions
 
-## 📊 Model Performance
+## 👨‍💻 Project Maintainer
 
-| Metric | Value |
-|---|---|
-| **mAP@0.5** | 0.75 |
-| **mAP@0.5:0.95** | 0.426 |
-| **Precision** | 0.82 |
-| **Recall** | 0.67 |
-| **Inference Speed** | ~38 ms/frame (CPU) |
-| **Training** | YOLOv8n, 100 epochs, transfer learning |
-| **Dataset** | Custom annotated Indian road dataset + RDD2022 |
+**Ashish Saini**
 
----
+Data Science and Software Development Enthusiast
 
-## 🎯 Key Achievements
+GitHub: [@Saini8890](https://github.com/Saini8890)
 
-- ✅ **Top 9%** at SIH 2026 Internal Hackathon (13th / 150 teams)
-- ✅ **99% bandwidth reduction** via edge processing
-- ✅ **Offline-resilient** event delivery (validated during network outage)
-- ✅ **4-bus fleet** streaming to single dashboard
-- ✅ **ANPR** with 94% OCR confidence on incident demo
-- ✅ Fully documented OpenAPI spec (`/docs`)
-
----
-
-## 🔮 Future Work
-
-- [ ] Merge full RDD2022 dataset → target mAP@0.5 of 0.85+
-- [ ] Replace mock ANPR with PaddleOCR production model
-- [ ] Fine-tune vehicle counting for congestion heatmaps
-- [ ] Deploy on Jetson Orin Nano for real onboard testing
-- [ ] Migrate SQLite → PostGIS for spatial queries
-- [ ] Add role-based auth for authorities
-
----
+Project Repository: [Mobile Urban Intelligence Platform](https://github.com/Saini8890/Mobile-urban-intelligence)
 
 ## 📜 License
 
-This project is licensed under the **MIT License** — see [LICENSE](LICENSE) for details.
+This project is intended to use the MIT License. An MIT license badge and license claim should only be added after the appropriate `LICENSE` file is present and the repository's licensing terms have been verified.
 
----
+## 🙌 Original Project Attribution
 
-## 👤 Author
-
-**Rakesh Choudhary**
-- GitHub: [@RakeshChoudhary49](https://github.com/RakeshChoudhary49)
-- Email: rc7724889@gmail.com
-
-*Built during SIH 2026 — Mobile Urban Intelligence Platform*
-=======
-# Mobile-urban-intelligence
->>>>>>> 9ef02a7f1490aaef66108a09c806f93feea9837d
+This repository is based on a project originally shared by its creator. Please retain the original creator's attribution and follow the applicable license and contribution terms.
