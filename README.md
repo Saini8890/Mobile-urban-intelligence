@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ![SIH 2026](https://img.shields.io/badge/SIH%202026-Rank%2013%2F150%20(Top%209%25)-blue)
 ![Python](https://img.shields.io/badge/Python-3.11+-green)
 ![YOLOv8](https://img.shields.io/badge/YOLOv8-mAP%400.5%3D0.75-orange)
@@ -258,3 +259,6 @@ This project is licensed under the **MIT License** — see [LICENSE](LICENSE) fo
 - Email: rc7724889@gmail.com
 
 *Built during SIH 2026 — Mobile Urban Intelligence Platform*
+=======
+# Mobile-urban-intelligence
+>>>>>>> 9ef02a7f1490aaef66108a09c806f93feea9837d
